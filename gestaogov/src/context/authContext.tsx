@@ -23,9 +23,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     async function login(email: string, senha: string) {
         try {
-            const response = await api.post("/auth", { email, senha });
-            if (response.data.token) {
-                localStorage.setItem("token", response.data.token);
+            // const response = await api.post("/auth", { email, senha });
+            const data = { token: "testes" };
+            if (data.token) {
+                localStorage.setItem("token", data.token);
                 // Após salvar token, carregar dados do usuário
                 await carregarUsuarioLogado();
             } else {
@@ -43,6 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     async function carregarUsuarioLogado() {
         const token = localStorage.getItem("token");
+
         if (!token) {
             setUser(null);
             return;
