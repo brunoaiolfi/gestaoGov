@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/hooks/useAuth";
+import { signIn } from "next-auth/react";
 
 const schema = z.object({
   email: z.string().email("Email inválido"),
@@ -14,7 +15,6 @@ const schema = z.object({
 type LoginFormInputs = z.infer<typeof schema>;
 
 export default function LoginPage() {
-  const { login } = useAuth(); // pega o login do contexto
   const {
     register,
     handleSubmit,
@@ -31,11 +31,12 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await login(data.email, data.senha);
-      alert("Login realizado com sucesso!");
-      // redirecionar aqui se quiser
+      await signIn("credentials", {
+        email: data.email,
+        password: data.senha,
+        callbackUrl: "/dashboard"
+      })
     } catch (err: any) {
-      // Mensagem de erro personalizada do contexto (pode aprimorar aí)
       setError("Email/Senha inválidos!");
     } finally {
       setLoading(false);
@@ -53,9 +54,8 @@ export default function LoginPage() {
             <input
               type="email"
               {...register("email")}
-              className={`mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.email ? "border-red-500" : "border-gray-300"
-              }`}
+              className={`mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.email ? "border-red-500" : "border-gray-300"
+                }`}
               placeholder="seuemail@exemplo.com"
             />
             {errors.email && (
@@ -68,9 +68,8 @@ export default function LoginPage() {
             <input
               type="password"
               {...register("senha")}
-              className={`mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.senha ? "border-red-500" : "border-gray-300"
-              }`}
+              className={`mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.senha ? "border-red-500" : "border-gray-300"
+                }`}
               placeholder="••••••••"
             />
             {errors.senha && (
@@ -82,9 +81,8 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className={`w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition ${loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             disabled={loading}
           >
             {loading ? "Entrando..." : "Entrar"}
